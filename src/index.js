@@ -4,7 +4,7 @@ const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 
-const PORT = 2000;
+const PORT = process.env.PORT;
 const routes = require("./routes");
 const { urlencoded } = require("body-parser");
 console.log(PORT);

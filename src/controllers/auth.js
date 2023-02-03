@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const {Op} = require("sequelize")
 const {sequelize} = require("../models")
 const User = db.user;
+
 const secret = "qaqa"
 const authController = {
   login: async (req, res) => {

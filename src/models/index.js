@@ -49,5 +49,17 @@ db.Sequelize = Sequelize;
 
 db.user = require("./user")(sequelize, Sequelize);
 db.book = require("./book")(sequelize, Sequelize);
+db.cart = require("./cart")(sequelize, Sequelize);
+
+db.user.belongsToMany(db.book, {
+  through: db.cart,
+  as: "carts",
+  foreignKey: "user_id",
+});
+
+db.book.belongsToMany(db.user, {
+  through: db.cart,
+  foreignKey: "book_id",
+});
 
 module.exports = db;
