@@ -1,7 +1,11 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {Op} = require("sequelize")
+const {sequelize} = require("../models")
 const User = db.user;
+
+const secret = "qaqa"
 const authController = {
   login: async (req, res) => {
     console.log(req.body);
@@ -11,14 +15,9 @@ const authController = {
       const result = await User.findOne({
         where: {
           nim: nim,
+          password : password,
         },
       });
-      const isValid = await bcrypt.compare(password, result.password);
-      if (!isValid) {
-        res.status(400).json({
-          message: err,
-        });
-      }
 
       const token = jwt.sign({ ...result.dataValues }, secret, {
         expiresIn: "1h",
@@ -40,5 +39,45 @@ const authController = {
       });
     }
   },
+  register: async (req, res) => {
+    const t =  await sequelize.transaction();
+
+    try {
+      const ifUserExist = await User.findOne({
+        where: {
+          [Op.or]: [
+            {
+              email: req.body.email,
+            },
+
+            {
+              username: req.body.username
+            },
+          ],
+        },
+      });
+      
+      if  (ifUserExist) {
+        throw new Error({
+          message: "this email already registered",
+        });
+      }
+      const result =  await User.create({...req.body});
+      await t.commit;
+
+      return res.status(201).json({
+        message: "new user registered",
+        result: result,
+      });
+    }
+    catch(err) {
+      await t.rollback();
+
+      console.log(err);
+      res.status(400).json({
+        message: err,
+      });
+    }
+  }
 };
 module.exports = authController;
