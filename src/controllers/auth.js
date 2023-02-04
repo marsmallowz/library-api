@@ -1,11 +1,11 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {Op} = require("sequelize")
-const {sequelize} = require("../models")
+const { Op } = require("sequelize");
+const { sequelize } = require("../models");
 const User = db.user;
 
-const secret = "qaqa"
+const secret = "qaqa";
 const authController = {
   login: async (req, res) => {
     console.log(req.body);
@@ -15,7 +15,7 @@ const authController = {
       const result = await User.findOne({
         where: {
           nim: nim,
-          password : password,
+          password: password,
         },
       });
 
@@ -35,12 +35,12 @@ const authController = {
     } catch (error) {
       await t.rollback();
       res.status(400).json({
-        message: err,
+        message: error,
       });
     }
   },
   register: async (req, res) => {
-    const t =  await sequelize.transaction();
+    const t = await sequelize.transaction();
 
     try {
       const ifUserExist = await User.findOne({
@@ -51,26 +51,25 @@ const authController = {
             },
 
             {
-              username: req.body.username
+              username: req.body.username,
             },
           ],
         },
       });
-      
-      if  (ifUserExist) {
+
+      if (ifUserExist) {
         throw new Error({
           message: "this email already registered",
         });
       }
-      const result =  await User.create({...req.body});
+      const result = await User.create({ ...req.body });
       await t.commit;
 
       return res.status(201).json({
         message: "new user registered",
         result: result,
       });
-    }
-    catch(err) {
+    } catch (err) {
       await t.rollback();
 
       console.log(err);
@@ -78,6 +77,6 @@ const authController = {
         message: err,
       });
     }
-  }
+  },
 };
 module.exports = authController;
