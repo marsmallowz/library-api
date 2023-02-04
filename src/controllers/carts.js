@@ -1,4 +1,5 @@
 const db = require("../models");
+const { sequelize } = require("../models");
 
 const cartController = {
   addBook: async (req, res) => {
@@ -14,7 +15,7 @@ const cartController = {
     } catch (error) {
       await t.rollback();
       return res.status(400).json({
-        message: err,
+        message: error,
       });
     }
   },
@@ -33,7 +34,7 @@ const cartController = {
     } catch (error) {
       await t.rollback();
       return res.status(400).json({
-        message: err,
+        message: error,
       });
     }
   },
