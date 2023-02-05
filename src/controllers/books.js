@@ -2,7 +2,7 @@ const db = require("../models");
 const { Sequelize, sequelize } = require("../models");
 
 const bookController = {
-  getBooks2: async (req, res) => {
+  getBooks: async (req, res) => {
     const t = await sequelize.transaction();
     const { page, size, sort } = req.query;
     const data = { page: page ?? 1, size: size ?? 8, sort: sort ?? "ASC" };
@@ -57,6 +57,32 @@ const bookController = {
       console.log("result");
       console.log(result);
       await t.commit();
+      res.send(result);
+    } catch (error) {
+      console.log(error);
+      await t.rollback();
+      res.status(400).json({
+        message: error,
+      });
+    }
+  },
+  bookDetails: async (req, res) => {
+    console.log(req.params);
+    const t = await sequelize.transaction();
+    try {
+      const result = await db.book.findOne({
+        where: {
+          id: req.params.book_id,
+        },
+        include: {
+          model: db.category,
+          as: "categories",
+          attributes: ["id", "category"],
+          through: { attributes: [] },
+        },
+      });
+      await t.commit();
+      console.log(result);
       res.send(result);
     } catch (error) {
       console.log(error);
