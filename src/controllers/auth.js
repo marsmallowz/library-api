@@ -7,9 +7,10 @@ const fs = require("fs");
 const { getMaxListeners } = require("process");
 const mailer = require("../lib/mailer");
 const mustache = require("mustache");
+
 const User = db.user;
 
-const secret = "qaqa"
+const secret = "qaqa";
 const authController = {
   login: async (req, res) => {
     console.log(req.body);
@@ -19,7 +20,7 @@ const authController = {
       const result = await User.findOne({
         where: {
           nim: nim,
-          password : password,
+          password: password,
         },
       });
 
@@ -46,7 +47,7 @@ const authController = {
 
 
   register: async (req, res) => {
-    const t =  await sequelize.transaction();
+    const t = await sequelize.transaction();
 
     const { email, password, username, nim } = req.body;
 
@@ -63,8 +64,7 @@ const authController = {
             },
           ],
         },
-      });
-      
+      });      
       if  (ifUserExist) {
         throw new Error(
          "this email already registered",
@@ -81,6 +81,7 @@ const authController = {
 
       const result =  await User.create({...req.body});
       delete result.dataValues.password;
+
       await t.commit;
 
       const token  = await jwt.sign({
@@ -112,8 +113,7 @@ const authController = {
         message: "new user registered",
         result: result,
       });
-    }
-    catch(err) {
+    } catch (err) {
       await t.rollback();
 
       console.log(err);
@@ -173,6 +173,7 @@ const authController = {
     });
     res.send("email Sent")
   },
+
 
 };
 module.exports = authController;

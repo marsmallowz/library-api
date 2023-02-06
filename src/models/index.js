@@ -50,6 +50,9 @@ db.Sequelize = Sequelize;
 db.user = require("./user")(sequelize, Sequelize);
 db.book = require("./book")(sequelize, Sequelize);
 db.cart = require("./cart")(sequelize, Sequelize);
+db.category = require("./category")(sequelize, Sequelize);
+db.booksCategories = require("./books-categories")(sequelize, Sequelize);
+db.loan = require("./loan")(sequelize, Sequelize);
 
 db.user.belongsToMany(db.book, {
   through: db.cart,
@@ -61,5 +64,22 @@ db.book.belongsToMany(db.user, {
   through: db.cart,
   foreignKey: "book_id",
 });
+
+db.book.belongsToMany(db.category, {
+  through: db.booksCategories,
+  as: "categories",
+  foreignKey: "book_id",
+});
+
+db.category.belongsToMany(db.book, {
+  through: db.booksCategories,
+  foreignKey: "category_id",
+});
+
+db.user.hasMany(db.loan, { foreignKey: "user_id" });
+db.loan.belongsTo(db.user, { foreignKey: "user_id" });
+
+db.book.hasMany(db.loan, { foreignKey: "book_id" });
+db.loan.belongsTo(db.book, { foreignKey: "book_id" });
 
 module.exports = db;

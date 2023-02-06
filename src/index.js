@@ -14,11 +14,14 @@ app.use(express.json());
 app.use(urlencoded({ extended: false }));
 app.use(cors());
 
-const db = require("./models");
-db.sequelize.sync();
+// const db = require("./models");
+// db.sequelize.sync();
 
 
 app.use("/auth", routes.authRoute);
+app.use("/carts", routes.cartRoute);
+app.use("/books", routes.bookRoute);
+app.use("/loans", routes.loanRoute);
 
 app.get("/", (_, res) => {
   res.send("api is running");
