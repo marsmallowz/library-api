@@ -17,6 +17,7 @@ app.use(cors());
 // const db = require("./models");
 // db.sequelize.sync();
 
+
 app.use("/auth", routes.authRoute);
 app.use("/carts", routes.cartRoute);
 app.use("/books", routes.bookRoute);
