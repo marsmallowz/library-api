@@ -55,6 +55,30 @@ const loanController = {
       });
     }
   },
+  returnLoan: async (req, res) => {
+    console.log(req.params);
+    const t = await sequelize.transaction();
+    try {
+      const result = await db.loan.update(
+        {
+          return: 1,
+        },
+        {
+          where: {
+            id: req.params.loan_id,
+          },
+        }
+      );
+      await t.commit();
+      res.send(result);
+    } catch (error) {
+      console.log(error);
+      await t.rollback();
+      return res.status(400).json({
+        message: error.toString(),
+      });
+    }
+  },
   getLoans: async (req, res) => {
     console.log(req.params);
     const t = await sequelize.transaction();
