@@ -17,11 +17,11 @@ app.use(cors());
 // const db = require("./models");
 // db.sequelize.sync();
 
-
 app.use("/auth", routes.authRoute);
 app.use("/carts", routes.cartRoute);
 app.use("/books", routes.bookRoute);
 app.use("/loans", routes.loanRoute);
+app.use("/categories", routes.categoryRoute);
 
 app.get("/", (_, res) => {
   res.send("api is running");
