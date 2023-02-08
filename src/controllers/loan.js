@@ -102,7 +102,7 @@ const loanController = {
             },
             {
               model: db.user,
-              attributes: ["id", "nim", "username"],
+              attributes: ["id", "nim", "username", "email"],
             },
           ],
         });

@@ -6,11 +6,17 @@ const bookController = {
     const t = await sequelize.transaction();
     const { page, size, sort } = req.query;
     const data = { page: page ?? 1, size: size ?? 8, sort: sort ?? "ASC" };
-    data.page = 1 - data.page;
+    console.log(data);
+
+    data.page = data.page - 1;
+    console.log("mydata page");
+    console.log(data);
     try {
       let sperated = "";
       let books = {};
-      if (req.body.categories) {
+      console.log("req.body.categories");
+      console.log(req.body.categories);
+      if (req.body.categories.length) {
         const categories = req.body.categories;
         categories.forEach((val, index) => {
           if (index !== 0) {
@@ -22,21 +28,19 @@ const bookController = {
         books = await sequelize.query(
           `
           SELECT book_id as id, books.tittle 
-          FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories where category_id IN(${sperated}) group by book_id ) as list_book 
+          FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories where category_id IN(${sperated}) group by book_id having jumlah = ${categories.length} ) as list_book 
           JOIN books on book_id = books.id order by books.tittle ${data.sort} limit ${data.size} offset ${data.page};`,
           { type: Sequelize.QueryTypes.SELECT }
         );
       } else {
         books = await sequelize.query(
           `
-          SELECT book_id as id, books.tittle 
-          FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories where category_id group by book_id ) as list_book 
-          JOIN books on book_id = books.id order by books.tittle ${data.sort} limit ${data.size} offset ${data.page};
+          SELECT id, tittle  
+          FROM books order by tittle ${data.sort} limit ${data.size} offset ${data.page};
           `,
           { type: Sequelize.QueryTypes.SELECT }
         );
       }
-
       console.log("books");
       console.log(books);
       const bookIdList = await books.map((val) => val.id);
@@ -52,6 +56,7 @@ const bookController = {
           attributes: ["id", "category"],
           through: { attributes: [] },
         },
+        order: [["tittle", data.sort]],
       });
 
       console.log("result");
@@ -97,3 +102,9 @@ const bookController = {
 module.exports = bookController;
 
 // `SELECT book_id as id, books.tittle FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories where category_id IN(${sperated}) group by book_id having jumlah = 2) as list_book JOIN books on book_id = books.id;`,
+
+// `
+// SELECT book_id as id, books.tittle
+// FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories group by book_id ) as list_book
+// JOIN books on book_id = books.id order by books.tittle ${data.sort} limit ${data.size} offset ${data.page};
+// `,
