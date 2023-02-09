@@ -22,6 +22,7 @@ app.use("/carts", routes.cartRoute);
 app.use("/books", routes.bookRoute);
 app.use("/loans", routes.loanRoute);
 app.use("/categories", routes.categoryRoute);
+app.use("/post_image", express.static(`${__dirname}/public/book`));
 
 app.get("/", (_, res) => {
   res.send("api is running");
