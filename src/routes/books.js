@@ -4,7 +4,7 @@ const { bookController } = require("../controllers");
 const { verifyToken } = require("../middlewares/auth");
 const {fileUploader, upload} = require("../middlewares/multer");
 
-router.get("/", bookController.getBooks);
+router.post("/", bookController.getBooks);
 router.get("/:book_id", bookController.bookDetails);
 router.patch("/:book_id", verifyToken, bookController.updateBook);
 router.delete("/:book_id", verifyToken, bookController.deleteBook);
