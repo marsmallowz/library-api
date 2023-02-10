@@ -1,7 +1,7 @@
 const db = require("../models");
 const { Sequelize, sequelize, book } = require("../models");
 const fs = require("fs");
-const filePath = "src/public/book/"
+const filePath = "src/public/book/";
 
 const bookController = {
   getBooks: async (req, res) => {
@@ -103,8 +103,8 @@ const bookController = {
     console.log(req.body);
     try {
       const image_url = process.env.render_image + req.file.filename;
-      const { tittle, author,synopsis } = req.body;
-      const data = {tittle, author, synopsis,image_url, stock : 0};
+      const { tittle, author, synopsis } = req.body;
+      const data = { tittle, author, synopsis, image_url, stock: 0 };
 
       console.log(req.body);
       const result = await db.book.create({ ...data });
@@ -120,36 +120,38 @@ const bookController = {
     }
   },
 
-  createBook2 : async(req, res) => {
+  createBook2: async (req, res) => {
     console.log(req.body);
     const id = req.params.id;
-
     let pic = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
-    await book.update({
-      avatar_buffer: pic,
-      avatar_url: process.env.render_avatar + id,
-  },
-  {
-    where: {
-      id : id,
-    },
-  }
-  );
-  res.send("test")
+    await book.update(
+      {
+        avatar_buffer: pic,
+        avatar_url: process.env.render_avatar + id,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res.send("test");
   },
   updateBook: async (req, res) => {
+    console.log("req data");
+    console.log(req);
     console.log(req.body);
     try {
       const id = req.params.book_id;
-      const {tittle, author, synopsis, stock} =  req.body;
-      const data = {tittle, author, synopsis, stock};
+      const { tittle, author, synopsis, stock } = req.body;
+      const data = { tittle, author, synopsis, stock };
       console.log(data);
       await book.update(
         {
           ...data,
         },
         {
-          where : {
+          where: {
             id,
           },
         }
@@ -159,62 +161,62 @@ const bookController = {
       return res.status(200).json({
         message: "Book updated successfully",
         result,
-      })
+      });
     } catch (err) {
       return res.status(400).json({
         message: err.toString(),
-      })
+      });
     }
   },
 
-deleteBook: async(req, res) => {
-  console.log(req.body);
-  const t = await sequelize.transaction();
+  deleteBook: async (req, res) => {
+    console.log(req.body);
+    const t = await sequelize.transaction();
 
-  try {
-    if (!req.user.admin){
-      throw new Error ("Not Admin");
+    try {
+      if (!req.user.admin) {
+        throw new Error("Not Admin");
+      }
+
+      const id = await db.book.findOne({
+        where: {
+          id: req.params.book_id,
+        },
+      });
+      console.log("id");
+      console.log(
+        id.dataValues.image_url.split("http://localhost:2000/post_image/")
+      );
+      const image = id.dataValues.image_url.split(
+        "http://localhost:2000/post_image/"
+      );
+
+      fs.unlink(filePath + image[1], function (err) {
+        if (err && err.code !== "ENOENT") {
+          throw new Error("Books Doesnt Exist, Won't remove it");
+        } else if (err) {
+          throw new Error(err);
+        } else {
+          console.log("Books Removed");
+        }
+      });
+
+      const result = db.book.destroy({
+        where: {
+          id: req.params.book_id,
+        },
+      });
+
+      await t.commit();
+      res.send(result);
+    } catch (error) {
+      await t.rollback();
+      console.log(error);
+      return res.status(400).json({
+        message: error.toString(),
+      });
     }
-
-    const id = await db.book.findOne({
-      where: {
-        id :  req.params.book_id
-      }
-    })
-    console.log("id");
-    console.log(id.dataValues.image_url.split('http://localhost:2000/post_image/'));
-    const image = id.dataValues.image_url.split('http://localhost:2000/post_image/');
-
-    fs.unlink(filePath + image[1] , function(err) {
-      if (err && err.code !== 'ENOENT') {
-        throw new Error("Books Doesnt Exist, Won't remove it");
-      }
-      else if (err) {
-        throw new Error(err)
-      }
-      else {
-        console.log("Books Removed")
-      }
-    });
-
-    const result = db.book.destroy({
-      where: {
-        id : req.params.book_id,
-      }
-    });
-
-    await t.commit();
-    res.send(result);
-  }
-  catch(error) {
-    await t.rollback();
-    console.log(error);
-    return res.status(400).json({
-      message: error.toString(),
-    });
-  }
-},
-
+  },
 };
 
 module.exports = bookController;
