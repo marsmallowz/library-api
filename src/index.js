@@ -14,8 +14,8 @@ app.use(express.json());
 app.use(urlencoded({ extended: false }));
 app.use(cors());
 
-// const db = require("./models");
-// db.sequelize.sync();
+const db = require("./models");
+db.sequelize.sync({ alter: true });
 
 app.use("/auth", routes.authRoute);
 app.use("/carts", routes.cartRoute);
