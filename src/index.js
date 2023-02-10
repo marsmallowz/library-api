@@ -2,8 +2,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv");
-var multer = require("multer");
-const upload = multer();
+// var multer = require("multer");
+// const upload = multer();
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -17,10 +17,10 @@ app.use(express.json());
 
 app.use(urlencoded({ extended: false }));
 app.use(cors());
-app.use(upload.array());
+// app.use(upload.array());
 
-const db = require("./models");
-db.sequelize.sync({ alter: true });
+// const db = require("./models");
+// db.sequelize.sync({ alter: true });
 
 app.use("/auth", routes.authRoute);
 app.use("/carts", routes.cartRoute);

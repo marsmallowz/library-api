@@ -139,14 +139,44 @@ const bookController = {
   },
   updateBook: async (req, res) => {
     console.log("req data");
-    console.log(req);
+    // console.log(req);
     console.log(req.body);
     try {
+      if (!req.user.admin) {
+        throw new Error("Not Admin");
+      }
       const id = req.params.book_id;
       const { tittle, author, synopsis, stock } = req.body;
       const data = { tittle, author, synopsis, stock };
       console.log(data);
+      
+      if (req.file) {
+        const id = await db.book.findOne({
+          where : {
+            id : req.params.book_id,
+          },
+        });
+        console.log("result");
+        const image = id.dataValues.image_url.split("http://localhost:2000/post_image/");
+
+        fs.unlink(filePath + image[1], function (err) {
+          if (err && err.code !== "ENOENT") {
+            throw new Error("Books Doesnt Exist")
+          }
+          else if (err) {
+            throw new Error (err)
+          }
+          else {
+            console.log("Books Removed")
+          }
+        } );
+
+        data.image_url = process.env.render_image + req.file.filename;
+
+      }
+
       await book.update(
+
         {
           ...data,
         },
