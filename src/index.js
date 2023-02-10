@@ -1,6 +1,6 @@
 const express = require("express");
-const cors = require("cors");
 const app = express();
+const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -11,7 +11,7 @@ console.log(PORT);
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(urlencoded({ extended: false }));
+app.use(urlencoded({ extended: true }));
 app.use(cors());
 
 // const db = require("./models");

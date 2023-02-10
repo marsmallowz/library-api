@@ -137,34 +137,36 @@ const bookController = {
   );
   res.send("test")
   },
-
   updateBook: async (req, res) => {
     console.log(req.body);
-    const t = await sequelize.transaction();
     try {
-      if(!req.user.admin) {
-        throw new Error("not Admin");
-      }
-      const result = db.book.update({
-        book: req.body.book,
-      },
-      {
-        where: {
-          id: req.params.book_id,
+      const id = req.params.book_id;
+      const {tittle, author, synopsis, stock} =  req.body;
+      const data = {tittle, author, synopsis, stock};
+      console.log(data);
+      await book.update(
+        {
+          ...data,
+        },
+        {
+          where : {
+            id,
+          },
         }
-      },
       );
-      await t.commit();
-      res.send(result);
-    }
-    catch(error) {
-      await t.rollback();
-      console.log(error);
+      const result = await book.findByPk(id);
+
+      return res.status(200).json({
+        message: "Book updated successfully",
+        result,
+      })
+    } catch (err) {
       return res.status(400).json({
-        message: error.toString(),
+        message: err.toString(),
       })
     }
   },
+
 deleteBook: async(req, res) => {
   console.log(req.body);
   const t = await sequelize.transaction();
