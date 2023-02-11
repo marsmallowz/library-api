@@ -100,13 +100,10 @@ const bookController = {
     }
   },
   createBook: async (req, res) => {
-    console.log(req.body);
     try {
       const image_url = process.env.render_image + req.file.filename;
-      const { tittle, author, synopsis } = req.body;
-      const data = { tittle, author, synopsis, image_url, stock: 0 };
-
-      console.log(req.body);
+      const { tittle, author, synopsis, stock } = req.body;
+      const data = { tittle, author, synopsis, image_url, stock };
       const result = await db.book.create({ ...data });
 
       return res.status(200).json({
@@ -149,34 +146,32 @@ const bookController = {
       const { tittle, author, synopsis, stock } = req.body;
       const data = { tittle, author, synopsis, stock };
       console.log(data);
-      
+
       if (req.file) {
         const id = await db.book.findOne({
-          where : {
-            id : req.params.book_id,
+          where: {
+            id: req.params.book_id,
           },
         });
         console.log("result");
-        const image = id.dataValues.image_url.split("http://localhost:2000/post_image/");
+        const image = id.dataValues.image_url.split(
+          "http://localhost:2000/post_image/"
+        );
 
         fs.unlink(filePath + image[1], function (err) {
           if (err && err.code !== "ENOENT") {
-            throw new Error("Books Doesnt Exist")
+            console.log("image not found");
+          } else if (err) {
+            console.log("image not found2");
+          } else {
+            console.log("Books Removed");
           }
-          else if (err) {
-            throw new Error (err)
-          }
-          else {
-            console.log("Books Removed")
-          }
-        } );
+        });
 
         data.image_url = process.env.render_image + req.file.filename;
-
       }
 
       await book.update(
-
         {
           ...data,
         },
@@ -223,9 +218,11 @@ const bookController = {
 
       fs.unlink(filePath + image[1], function (err) {
         if (err && err.code !== "ENOENT") {
-          throw new Error("Books Doesnt Exist, Won't remove it");
+          // throw new Error("Books Doesnt Exist, Won't remove it");
+          console.log("image not found");
         } else if (err) {
-          throw new Error(err);
+          // throw new Error(err);
+          console.log("image not found2");
         } else {
           console.log("Books Removed");
         }
@@ -236,7 +233,6 @@ const bookController = {
           id: req.params.book_id,
         },
       });
-
       await t.commit();
       res.send(result);
     } catch (error) {
