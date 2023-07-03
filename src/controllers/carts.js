@@ -3,7 +3,6 @@ const { sequelize } = require("../models");
 
 const cartController = {
   addBook: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       const book = await db.book.findOne({
@@ -37,7 +36,6 @@ const cartController = {
     }
   },
   deleteBook: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       await db.cart.destroy({

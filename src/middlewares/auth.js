@@ -2,9 +2,6 @@ const jwt = require("jsonwebtoken");
 const secret = "qaqa";
 
 const verifyToken = async (req, res, next) => {
-  console.log("zzzz");
-  console.log(secret);
-  console.log(process.env.secret);
   let token = req.headers.authorization;
 
   if (!token) {

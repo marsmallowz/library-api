@@ -3,10 +3,8 @@ const { Sequelize, sequelize, category } = require("../models");
 
 const categoryController = {
   getCategories: async (req, res) => {
-    console.log(req.body);
     const t = await sequelize.transaction();
     try {
-      console.log("hahhahah");
       const result = await db.category.findAll();
       await t.commit();
       res.send(result);
@@ -20,11 +18,8 @@ const categoryController = {
   },
 
   createCategory: async (req, res) => {
-    console.log(req.body);
     const t = await sequelize.transaction();
     try {
-      console.log("hahhahah");
-      console.log(req.user);
       if (!req.user.admin) {
         throw new Error("Not admin");
       }
@@ -38,14 +33,12 @@ const categoryController = {
       res.send(result);
     } catch (error) {
       await t.rollback();
-      console.log(error);
       return res.status(400).json({
         message: error.message.toString(),
       });
     }
   },
   updateCategory: async (req, res) => {
-    console.log(req.body);
     const t = await sequelize.transaction();
     try {
       if (!req.user.admin) {
@@ -72,7 +65,6 @@ const categoryController = {
     }
   },
   deleteCategory: async (req, res) => {
-    console.log(req.body);
     const t = await sequelize.transaction();
     try {
       if (!req.user.admin) {

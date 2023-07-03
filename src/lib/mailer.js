@@ -10,7 +10,6 @@ const transport = nodemailer.createTransport({
 });
 
 const mailer = async ({ subject, html, to, text }) => {
-  console.log(process.env.NODE_MAILER_EMAIL);
   await transport.sendMail({
     subject: subject || "test subject email",
     html: html || "<h1>This is sent through express API</h1>",

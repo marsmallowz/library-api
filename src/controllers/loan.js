@@ -3,7 +3,6 @@ const { sequelize } = require("../models");
 
 const loanController = {
   addBook: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       const checkCart = await db.cart.findOne({
@@ -44,7 +43,6 @@ const loanController = {
           book_id: req.params.book_id,
         },
       });
-      console.log("ini lanjut");
       await t.commit();
       res.send();
     } catch (error) {
@@ -56,7 +54,6 @@ const loanController = {
     }
   },
   returnLoan: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       const result = await db.loan.update(
@@ -80,7 +77,6 @@ const loanController = {
     }
   },
   getLoans: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       let result = {};

@@ -8,16 +8,11 @@ const bookController = {
     const t = await sequelize.transaction();
     const { page, size, sort } = req.query;
     const data = { page: page ?? 1, size: size ?? 8, sort: sort ?? "ASC" };
-    console.log(data);
 
     data.page = data.page - 1;
-    console.log("mydata page");
-    console.log(data);
     try {
       let sperated = "";
       let books = {};
-      console.log("req.body.categories");
-      console.log(req.body.categories);
       if (req.body.categories.length) {
         const categories = req.body.categories;
         categories.forEach((val, index) => {
@@ -43,11 +38,7 @@ const bookController = {
           { type: Sequelize.QueryTypes.SELECT }
         );
       }
-      console.log("books");
-      console.log(books);
       const bookIdList = await books.map((val) => val.id);
-      console.log("bookIdList");
-      console.log(bookIdList);
       const result = await db.book.findAll({
         where: {
           id: bookIdList,
@@ -61,8 +52,6 @@ const bookController = {
         order: [["tittle", data.sort]],
       });
 
-      console.log("result");
-      console.log(result);
       await t.commit();
       res.send(result);
     } catch (error) {
@@ -74,7 +63,6 @@ const bookController = {
     }
   },
   bookDetails: async (req, res) => {
-    console.log(req.params);
     const t = await sequelize.transaction();
     try {
       const result = await db.book.findOne({
@@ -89,7 +77,6 @@ const bookController = {
         },
       });
       await t.commit();
-      console.log(result);
       res.send(result);
     } catch (error) {
       console.log(error);
@@ -118,7 +105,6 @@ const bookController = {
   },
 
   createBook2: async (req, res) => {
-    console.log(req.body);
     const id = req.params.id;
     let pic = await sharp(req.file.buffer).resize(250, 250).png().toBuffer();
     await book.update(
@@ -135,9 +121,6 @@ const bookController = {
     res.send("test");
   },
   updateBook: async (req, res) => {
-    console.log("req data");
-    // console.log(req);
-    console.log(req.body);
     try {
       if (!req.user.admin) {
         throw new Error("Not Admin");
@@ -145,7 +128,6 @@ const bookController = {
       const id = req.params.book_id;
       const { tittle, author, synopsis, stock } = req.body;
       const data = { tittle, author, synopsis, stock };
-      console.log(data);
 
       if (req.file) {
         const id = await db.book.findOne({
@@ -153,7 +135,6 @@ const bookController = {
             id: req.params.book_id,
           },
         });
-        console.log("result");
         const image = id.dataValues.image_url.split(
           "http://localhost:2000/post_image/"
         );
@@ -195,7 +176,6 @@ const bookController = {
   },
 
   deleteBook: async (req, res) => {
-    console.log(req.body);
     const t = await sequelize.transaction();
 
     try {
@@ -208,10 +188,7 @@ const bookController = {
           id: req.params.book_id,
         },
       });
-      console.log("id");
-      console.log(
-        id.dataValues.image_url.split("http://localhost:2000/post_image/")
-      );
+
       const image = id.dataValues.image_url.split(
         "http://localhost:2000/post_image/"
       );
