@@ -6,7 +6,11 @@ const { fileUploader, upload } = require("../middlewares/multer");
 
 router.post("/", bookController.getBooks);
 router.get("/:book_id", bookController.bookDetails);
-router.delete("/:book_id", verifyToken, bookController.deleteBook);
+router.delete(
+  "/:book_id",
+  //  verifyToken,
+  bookController.deleteBook
+);
 router.post(
   "/v1",
   fileUploader({
@@ -16,11 +20,14 @@ router.post(
   }).single("image"),
   bookController.createBook
 );
-router.patch("/:book_id", verifyToken,
-fileUploader({
+router.patch(
+  "/:book_id",
+  // verifyToken,
+  fileUploader({
     destinationFolder: "book",
     fileType: "image",
     prefix: "POST",
   }).single("image"),
- bookController.updateBook);
+  bookController.updateBook
+);
 module.exports = router;

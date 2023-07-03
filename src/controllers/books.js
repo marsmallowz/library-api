@@ -122,9 +122,9 @@ const bookController = {
   },
   updateBook: async (req, res) => {
     try {
-      if (!req.user.admin) {
-        throw new Error("Not Admin");
-      }
+      // if (!req.user.admin) {
+      //   throw new Error("Not Admin");
+      // }
       const id = req.params.book_id;
       const { tittle, author, synopsis, stock } = req.body;
       const data = { tittle, author, synopsis, stock };
@@ -179,9 +179,9 @@ const bookController = {
     const t = await sequelize.transaction();
 
     try {
-      if (!req.user.admin) {
-        throw new Error("Not Admin");
-      }
+      // if (!req.user.admin) {
+      //   throw new Error("Not Admin");
+      // }
 
       const id = await db.book.findOne({
         where: {
@@ -223,11 +223,3 @@ const bookController = {
 };
 
 module.exports = bookController;
-
-// `SELECT book_id as id, books.tittle FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories where category_id IN(${sperated}) group by book_id having jumlah = 2) as list_book JOIN books on book_id = books.id;`,
-
-// `
-// SELECT book_id as id, books.tittle
-// FROM(SELECT book_id, COUNT(DISTINCT category_id ) as jumlah FROM books_categories group by book_id ) as list_book
-// JOIN books on book_id = books.id order by books.tittle ${data.sort} limit ${data.size} offset ${data.page};
-// `,
